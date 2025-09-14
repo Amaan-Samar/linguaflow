@@ -1,173 +1,3 @@
-// $(document).ready(function() {
-//     // Initialize variables
-//     let lastScrollPosition = 0;
-//     let isRomanizationVisible = true;
-//     const speakingUrl = getSpeak();
-    
-//     // Language mapping for speaking-url
-//     const languageMap = {
-//         'ru': 'russian',
-//         'fa': 'persian',
-//         'ar': 'arabic',
-//         'he': 'hebrew',
-//         'ja': 'japanese',
-//         'ko': 'korean'
-//     };
-    
-//     // Initialize UI
-//     updatePasteClearButton();
-    
-//     // Event handlers
-//     $('#original-text, #translation-text').on('input', function() {
-//         processText();
-//     });
-    
-//     $('#language-select').change(function() {
-//         processText();
-//     });
-    
-//     $('#paste-clear-btn').click(function() {
-//         if ($('#original-text').val().trim() === '') {
-//             pasteText();
-//         } else {
-//             clearField($('#original-text'));
-//         }
-//     });
-    
-//     $('#clear-screen-btn').click(function() {
-//         clearField($('#original-text'));
-//         clearField($('#translation-text'));
-//         $('#original-output').empty();
-//         $('#romanization-output').empty();
-//         $('#translation-output').empty();
-//         updatePasteClearButton();
-//     });
-    
-//     $('#toggle-romanization-btn').click(function() {
-//         isRomanizationVisible = !isRomanizationVisible;
-//         $('#romanization-output').toggle();
-//         $(this).find('i').toggleClass('fa-language fa-eye-slash');
-//     });
-    
-//     // Scroll behavior for FABs
-//     $(window).scroll(function() {
-//         const currentScrollPosition = $(this).scrollTop();
-//         if (currentScrollPosition > lastScrollPosition) {
-//             // Scrolling down
-//             $('.fab-btn').addClass('hidden');
-//         } else {
-//             // Scrolling up
-//             $('.fab-btn').removeClass('hidden');
-//         }
-//         lastScrollPosition = currentScrollPosition;
-//     });
-    
-//     // PWA installation prompt
-//     window.addEventListener('beforeinstallprompt', (e) => {
-//         e.preventDefault();
-//         // You can store the event and show a custom install button later
-//         console.log('PWA installation available');
-//     });
-    
-//     // Service Worker Registration
-//     if ('serviceWorker' in navigator) {
-//         window.addEventListener('load', () => {
-//             navigator.serviceWorker.register('sw.js').then(registration => {
-//                 console.log('ServiceWorker registration successful');
-//             }).catch(err => {
-//                 console.log('ServiceWorker registration failed: ', err);
-//             });
-//         });
-//     }
-    
-//     // Helper functions
-//     function updatePasteClearButton() {
-//         const btn = $('#paste-clear-btn');
-//         if ($('#original-text').val().trim() === '') {
-//             btn.html('<i class="fas fa-paste"></i> Paste');
-//             btn.removeClass('btn-danger').addClass('btn-outline-secondary');
-//         } else {
-//             btn.html('<i class="fas fa-times"></i> Clear');
-//             btn.removeClass('btn-outline-secondary').addClass('btn-danger');
-//         }
-//     }
-    
-//     function clearField(field) {
-//         field.val('');
-//         updatePasteClearButton();
-//     }
-    
-//     async function pasteText() {
-//         try {
-//             const text = await navigator.clipboard.readText();
-//             $('#original-text').val(text);
-//             updatePasteClearButton();
-//             processText();
-//         } catch (err) {
-//             console.error('Failed to read clipboard contents: ', err);
-//             alert('Could not access clipboard. Please paste manually.');
-//         }
-//     }
-    
-//     function processText() {
-//         const originalText = $('#original-text').val().trim();
-//         const translationText = $('#translation-text').val().trim();
-//         const languageCode = $('#language-select').val();
-        
-//         // Update translation output
-//         $('#translation-output').text(translationText);
-        
-//         if (originalText === '') {
-//             $('#original-output').empty();
-//             $('#romanization-output').empty();
-//             return;
-//         }
-        
-//         // Process original text with romanization
-//         $('#original-output').text(originalText);
-        
-//         if (languageMap[languageCode]) {
-//             const romanizedText = romanizeText(originalText, languageMap[languageCode]);
-//             $('#romanization-output').html(romanizedText);
-//         } else {
-//             $('#romanization-output').html('<p class="text-muted">Romanization not available for this language.</p>');
-//         }
-//     }
-    
-//     function romanizeText(text, lang) {
-//         // Split into words (handling various scripts)
-//         const words = text.split(/\s+/);
-//         let output = '';
-        
-//         words.forEach(word => {
-//             if (word.trim() === '') return;
-            
-//             // Romanize using speaking-url
-//             let romanized = speakingUrl.slugify(word, {
-//                 lang: lang,
-//                 separator: ' ',
-//                 maintainCase: false,
-//                 titleCase: false,
-//                 uric: false,
-//                 mark: false
-//             }).replace(/-/g, ' ');
-            
-//             // Create word block
-//             output += `
-//                 <div class="word-block">
-//                     <span class="word-original">${word}</span>
-//                     <span class="word-romanized">${romanized}</span>
-//                 </div>
-//             `;
-//         });
-        
-//         return output;
-//     }
-// });
-
-
-
-
 class LanguageLearningPWA {
     constructor() {
         this.isRomanizationVisible = true;
@@ -297,10 +127,6 @@ class LanguageLearningPWA {
             if (i < translationParagraphs.length && translationParagraphs[i]) {
                 output += `
                     <div class="translation-paragraph">
-                        <div class="paragraph-header">
-                            <i class="bi bi-translate me-2"></i>
-                            <span class="paragraph-number">Paragraph ${i + 1} - English</span>
-                        </div>
                         <div class="translation-content">
                             ${this.escapeHtml(translationParagraphs[i])}
                         </div>
@@ -313,16 +139,12 @@ class LanguageLearningPWA {
                 const selectedLanguage = $('#languageSelect').val();
                 output += `
                     <div class="original-paragraph">
-                        <div class="paragraph-header">
-                            <i class="bi bi-book me-2"></i>
-                            <span class="paragraph-number">Paragraph ${i + 1} - ${this.getLanguageName(selectedLanguage)}</span>
-                        </div>
                         <div class="original-content">
                             ${this.processTextWithRomanization(originalParagraphs[i])}
                         </div>
                     </div>
-                `;
-            }
+                        `;
+                        }
 
             output += '</div>';
         }
