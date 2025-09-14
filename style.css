@@ -1,0 +1,113 @@
+/* :root {
+    --primary-color: #5473fda2;
+    --secondary-color: #3a0ca3;
+    --accent-color: #4ccaf0d0;
+    --text-color: #2b2d42;
+    --muted-color: #666;
+    --bg-color: #f8f9fa;
+} */
+
+/* body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1;
+}
+
+.card {
+    border-radius: 12px;
+    border: none;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.original-text {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--primary-color);
+    line-height: 1;
+}
+
+.romanization-text {
+    font-size: 0.9rem;
+    color: var(--muted-color);
+    line-height: 1.8;
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.translation-text {
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+
+.word-block {
+    display: inline-block;
+    margin-right: 1rem;
+    margin-bottom: 0.5rem;
+    vertical-align: top;
+}
+
+.word-original {
+    display: block;
+}
+
+.word-romanized {
+    display: block;
+    font-size: 0.8em;
+}
+
+
+.fab-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 1000;
+}
+
+.fab-btn {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.fab-btn.hidden {
+    opacity: 0;
+    transform: translateY(100px);
+}
+
+
+@media (max-width: 768px) {
+    .original-text {
+        font-size: 1.2rem;
+    }
+    
+    .fab-btn {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+
+@media all and (display-mode: standalone) {
+    body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+} */

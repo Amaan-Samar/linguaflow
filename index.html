@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4f46e5">
+    <title>LinguaFlow - Language Learning PWA</title>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="./public/linguaflow.png">
+
+    
+    <link rel="manifest" href="manifest.json">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --secondary-color: #64748b;
+            --accent-color: #06d6a0;
+            --bg-light: #f8fafc;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--border-color) 0%, var(--bg-light) 100%);
+            min-height: 100vh;
+            color: #334155;
+        } */
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+            'Ubuntu', 'Cantarel', ' Fira Sans', 'Droid Sans', 'Helvetica Neue',
+            sans-serif;
+            -weblit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            color: #334155;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            margin: 2rem 0;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.1;
+        }
+
+        .app-header h1 {
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .app-subtitle {
+            opacity: 0.9;
+            font-size: 1.1rem;
+            position: relative;
+        }
+
+        .content-area {
+            padding: 1rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            /* padding: 0.7rem 1rem; */
+            font-size: 0.7rem;
+            transition: all 0.3s ease;
+            box-shadow: none;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.15);
+            outline: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border: none;
+            border-radius: 16px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.15);
+        }
+
+        .smart-button {
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            min-width: 80px;
+        }
+
+        .output-section {
+            background: var(--bg-light);
+            border-radius: 20px;
+            padding: 0.7rem;
+            margin-top: 0.4rem;
+            min-height: 100px;
+            border: 2px solid var(--border-color);
+        }
+
+        .translation-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: var(--secondary-color);
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .original-text {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            line-height: 2;
+            margin-bottom: 1rem;
+        }
+
+        .word-container {
+            display: inline-block;
+            margin: 0.25rem 0.5rem 0.25rem 0;
+            vertical-align: top;
+        }
+
+        .original-word {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .romanized-word {
+            display: block;
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            font-style: italic;
+            border-top: 1px solid var(--border-color);
+            padding-top: 0.25rem;
+        }
+
+        .fab-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .fab-container.hidden {
+            transform: translateY(150px);
+        }
+
+        .fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fab-clear {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .fab-toggle {
+            background: linear-gradient(135deg, var(--accent-color), #059669);
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .language-selector {
+            margin-bottom: 0.7rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 3rem 2rem;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .romanization-hidden .romanized-word {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                /* margin: 0rem; */
+                border-radius: 20px;
+            }
+
+            .content-area {
+                padding: 1.5rem;
+            }
+
+            .app-header {
+                padding: 1.5rem;
+            }
+
+            .fab-container {
+                bottom: 1rem;
+                right: 1rem;
+            }
+
+            .fab {
+                width: 48px;
+                height: 48px;
+                font-size: 1rem;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Fade in animation */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+<style>
+
+    /* Enhanced paragraph-based layout styles */
+
+.paragraph-block {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    transition: all 0.3s ease;
+}
+
+.paragraph-block:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.paragraph-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.paragraph-number {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.translation-paragraph {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: rgba(40, 167, 69, 0.05);
+    border-left: 4px solid #28a745;
+    border-radius: 8px;
+}
+
+.translation-content {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #2d5a27;
+    font-style: italic;
+}
+
+.original-paragraph {
+    padding: 1rem;
+    background: rgba(0, 123, 255, 0.05);
+    border-left: 4px solid #007bff;
+    border-radius: 8px;
+}
+
+.original-content {
+    line-height: 1.8;
+}
+
+.sentence-container {
+    margin-bottom: 0.5rem;
+    padding: 0.25rem 0;
+}
+
+.word-container {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 0.15rem;
+    padding: 0.2rem 0.3rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.word-container:hover {
+    background: rgba(0, 123, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.original-word {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #212529;
+    margin-bottom: 0.1rem;
+}
+
+.romanized-word {
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-style: italic;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+}
+
+.romanized-word.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.punctuation {
+    color: #495057;
+    font-size: 1.1rem;
+}
+
+/* Animation for fade-in effect */
+.fade-in {
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Empty state styling */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    opacity: 0.7;
+}
+
+/* Loading spinner for smart button */
+.loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* FAB container improvements */
+#fabContainer {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+#fabContainer.hidden {
+    transform: translateY(100px);
+}
+
+.fab-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fab-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .paragraph-block {
+        margin-bottom: 1.5rem;
+        padding: 0.75rem;
+    }
+    
+    .word-container {
+        margin: 0 0.1rem;
+        padding: 0.15rem 0.2rem;
+    }
+    
+    .original-word {
+        font-size: 1rem;
+    }
+    
+    .romanized-word {
+        font-size: 0.75rem;
+    }
+    
+    .translation-content {
+        font-size: 1rem;
+    }
+    
+    .fab-container {
+        bottom: 1rem;
+        right: 1rem;
+    }
+    
+    .fab {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+/* Dark mode support */
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .paragraph-block {
+        background: linear-gradient(145deg, #2d3748, #4a5568);
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+    
+    .paragraph-header {
+        color: #cbd5e0;
+    }
+    
+    .translation-paragraph {
+        background: rgba(72, 187, 120, 0.1);
+        border-left-color: #48bb78;
+    }
+    
+    .translation-content {
+        color: #9ae6b4;
+    }
+    
+    .original-paragraph {
+        background: rgba(66, 153, 225, 0.1);
+        border-left-color: #4299e1;
+    }
+    
+    .original-word {
+        color: #e2e8f0;
+    }
+    
+    .romanized-word {
+        color: #a0aec0;
+    }
+    
+    .word-container:hover {
+        background: rgba(66, 153, 225, 0.2);
+    }
+    
+    .empty-state {
+        color: #a0aec0;
+    }
+}
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-container">
+            <!-- App Header -->
+            <div class="app-header">
+                <h1><i class="bi bi-translate"></i> LinguaFlow</h1>
+                <p class="app-subtitle">Learn languages with romanization</p>
+            </div>
+
+            <!-- Main Content -->
+            <div class="content-area">
+                <!-- Language Selection -->
+                <div class="language-selector">
+                    <!-- <label for="languageSelect" class="form-label fw-bold">Select Language</label> -->
+                <select class="form-select" id="languageSelect">
+                    <!-- Cyrillic Script Languages -->
+                    <option value="ru">Russian (русский)</option>
+                    <option value="uk">Ukrainian (українська)</option>
+                    <option value="bg">Bulgarian (български)</option>
+                    <option value="mk">Macedonian (македонски)</option>
+                    <option value="sr">Serbian (српски)</option>
+                    <option value="be">Belarusian (беларуская)</option>
+                    <option value="mn">Mongolian (монгол)</option>
+                    
+                    <!-- Arabic Script Languages -->
+                    <option value="ar">Arabic (العربية)</option>
+                    <option value="fa">Persian (فارسی)</option>
+                    <option value="ur">Urdu (اردو)</option>
+                    <option value="ps">Pashto (پښتو)</option>
+                    <option value="ku">Kurdish (کوردی)</option>
+                    
+                    <!-- East Asian Languages -->
+                    <option value="ko">Korean (한국어)</option>
+                    <option value="zh">Chinese (中文)</option>
+                    <option value="ja">Japanese (日本語)</option>
+                    
+                    <!-- South Asian Languages -->
+                    <option value="hi">Hindi (हिन्दी)</option>
+                    <option value="bn">Bengali (বাংলা)</option>
+                    <option value="gu">Gujarati (ગુજરાતી)</option>
+                    <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+                    <option value="te">Telugu (తెలుగు)</option>
+                    <option value="ta">Tamil (தமிழ்)</option>
+                    <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                    <option value="ml">Malayalam (മലയാളം)</option>
+                    <option value="mr">Marathi (मराठी)</option>
+                    <option value="ne">Nepali (नेपाली)</option>
+                    <option value="si">Sinhala (සිංහල)</option>
+                    
+                    <!-- Southeast Asian Languages -->
+                    <option value="th">Thai (ไทย)</option>
+                    <option value="lo">Lao (ລາວ)</option>
+                    <option value="km">Khmer (ខ្មែរ)</option>
+                    <option value="my">Myanmar (မြန်မာ)</option>
+                    <option value="vi">Vietnamese (Tiếng Việt)</option>
+                    
+                    <!-- Middle Eastern & Semitic Languages -->
+                    <option value="he">Hebrew (עברית)</option>
+                    <option value="am">Amharic (አማርኛ)</option>
+                    <option value="ti">Tigrinya (ትግርኛ)</option>
+                    
+                    <!-- Caucasian Languages -->
+                    <option value="ka">Georgian (ქართული)</option>
+                    <option value="hy">Armenian (հայերեն)</option>
+                    <option value="az">Azerbaijani (azərbaycan)</option>
+                    
+                    <!-- African Languages -->
+                    <option value="sw">Swahili (Kiswahili)</option>
+                    <option value="yo">Yoruba (Yorùbá)</option>
+                    <option value="ig">Igbo (Asụsụ Igbo)</option>
+                    <option value="ha">Hausa (هَوُسَ)</option>
+                    <option value="zu">Zulu (isiZulu)</option>
+                    <option value="xh">Xhosa (isiXhosa)</option>
+                    <option value="af">Afrikaans</option>
+                    
+                    <!-- European Languages (Non-Latin Script) -->
+                    <option value="el">Greek (ελληνικά)</option>
+                    
+                    <!-- Additional Languages -->
+                    <option value="tr">Turkish</option>
+                    <option value="id">Indonesian</option>
+                    <option value="ms">Malay</option>
+                    <option value="tl">Filipino</option>
+                    <option value="mt">Maltese</option>
+                    <option value="is">Icelandic</option>
+                    <option value="fo">Faroese</option>
+                </select>
+                </div>
+
+                <!-- Text Input Areas -->
+                <div class="input-group">
+                    <!-- <label for="originalText" class="form-label fw-bold">Original Text</label> -->
+                    <div class="position-relative">
+                        <textarea class="form-control" id="originalText" rows="4" 
+                                placeholder="Enter text in the selected language..."></textarea>
+                        <button class="btn btn-primary smart-button position-absolute top-0 end-0 m-2" 
+                                id="smartButton">Paste</button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <!-- <label for="translationText" class="form-label fw-bold">Translation</label> -->
+                    <textarea class="form-control" id="translationText" rows="3" 
+                            placeholder="Enter the English translation..."></textarea>
+                </div>
+
+                <!-- Output Section -->
+                <div class="output-section" id="outputSection">
+                    <div class="empty-state">
+                        <i class="bi bi-chat-dots"></i>
+                        <p>Your romanized text will appear here...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="fab-container" id="fabContainer">
+        <button class="fab fab-toggle" id="toggleRomanization" title="Toggle Romanization">
+            <i class="bi bi-eye"></i>
+        </button>
+        <button class="fab fab-clear" id="clearScreen" title="Clear All">
+            <i class="bi bi-trash"></i>
+        </button>
+    </div>
+
+    
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/speakingurl/14.0.1/speakingurl.min.js"></script>
+    <script src="./app.js"></script>
+
+    <!-- <script>
+        class LanguageLearningPWA {
+            constructor() {
+                this.isRomanizationVisible = true;
+                this.lastScrollTop = 0;
+                this.initializeApp();
+                this.bindEvents();
+                this.registerServiceWorker();
+            }
+
+            initializeApp() {
+                console.log('LinguaFlow PWA Initialized');
+            }
+
+            bindEvents() {
+                // Text input events
+                $('#originalText').on('input', () => this.handleTextInput());
+                $('#translationText').on('input', () => this.renderOutput());
+                
+                // Smart button functionality
+                $('#smartButton').on('click', () => this.handleSmartButton());
+                
+                // Language selection
+                $('#languageSelect').on('change', () => this.handleLanguageChange());
+                
+                // FAB events
+                $('#clearScreen').on('click', () => this.clearAll());
+                $('#toggleRomanization').on('click', () => this.toggleRomanization());
+                
+                // Scroll behavior for FABs
+                $(window).on('scroll', () => this.handleScroll());
+                
+                // Initialize smart button state
+                this.updateSmartButton();
+            }
+
+            handleTextInput() {
+                this.updateSmartButton();
+                this.renderOutput();
+            }
+
+            updateSmartButton() {
+                const originalText = $('#originalText').val().trim();
+                const $button = $('#smartButton');
+                
+                if (originalText) {
+                    $button.text('Clear').removeClass('btn-primary').addClass('btn-outline-danger');
+                } else {
+                    $button.text('Paste').removeClass('btn-outline-danger').addClass('btn-primary');
+                }
+            }
+
+            async handleSmartButton() {
+                const $button = $('#smartButton');
+                const originalText = $('#originalText').val().trim();
+                
+                if (originalText) {
+                    // Clear functionality
+                    $('#originalText').val('');
+                    this.updateSmartButton();
+                    this.renderOutput();
+                } else {
+                    // Paste functionality
+                    try {
+                        $button.html('<span class="loading"></span>');
+                        const text = await navigator.clipboard.readText();
+                        $('#originalText').val(text);
+                        this.updateSmartButton();
+                        this.renderOutput();
+                    } catch (err) {
+                        console.warn('Clipboard access failed:', err);
+                        // Fallback: focus on textarea for manual paste
+                        $('#originalText').focus();
+                    } finally {
+                        $button.text('Clear').removeClass('btn-primary').addClass('btn-outline-danger');
+                    }
+                }
+            }
+
+            handleLanguageChange() {
+                this.renderOutput();
+            }
+
+            renderOutput() {
+                const originalText = $('#originalText').val().trim();
+                const translationText = $('#translationText').val().trim();
+                const $output = $('#outputSection');
+
+                if (!originalText && !translationText) {
+                    $output.html(`
+                        <div class="empty-state">
+                            <i class="bi bi-chat-dots"></i>
+                            <p>Your romanized text will appear here...</p>
+                        </div>
+                    `);
+                    return;
+                }
+
+                let outputHtml = '<div class="fade-in">';
+
+                // Render translation
+                if (translationText) {
+                    outputHtml += `
+                        <div class="translation-text">
+                            <i class="bi bi-translate me-2"></i>${this.escapeHtml(translationText)}
+                        </div>
+                    `;
+                }
+
+                // Render original text with romanization
+                if (originalText) {
+                    outputHtml += '<div class="original-text">';
+                    outputHtml += this.processTextWithRomanization(originalText);
+                    outputHtml += '</div>';
+                }
+
+                outputHtml += '</div>';
+                $output.html(outputHtml);
+            }
+
+            processTextWithRomanization(text) {
+                const selectedLanguage = $('#languageSelect').val();
+                const lines = text.split('\n');
+                let result = '';
+
+                lines.forEach((line, lineIndex) => {
+                    if (line.trim()) {
+                        const words = line.split(/\s+/);
+                        words.forEach((word) => {
+                            if (word.trim()) {
+                                const romanized = this.romanizeWord(word, selectedLanguage);
+                                result += `
+                                    <span class="word-container">
+                                        <span class="original-word">${this.escapeHtml(word)}</span>
+                                        <span class="romanized-word">${this.escapeHtml(romanized)}</span>
+                                    </span>
+                                `;
+                            }
+                        });
+                        if (lineIndex < lines.length - 1) {
+                            result += '<br>';
+                        }
+                    }
+                });
+
+                return result;
+            }
+
+            romanizeWord(word, language) {
+                try {
+                    // Clean the word of punctuation for romanization
+                    const cleanWord = word.replace(/[^\p{L}]/gu, '');
+                    if (!cleanWord) return word;
+
+                    // Use speaking-url library for romanization
+                    const romanized = getSlug(cleanWord, {
+                        lang: language,
+                        separator: '',
+                        maintainCase: false,
+                        custom: {
+                            // Add custom mappings for better romanization
+                            'ё': 'yo', 'ъ': '', 'ь': '',
+                            'ث': 'th', 'خ': 'kh', 'ذ': 'dh', 'ش': 'sh', 'غ': 'gh',
+                            'ژ': 'zh', 'چ': 'ch', 'گ': 'g', 'پ': 'p', 'ک': 'k'
+                        }
+                    });
+
+                    // If romanization failed or returned empty, return transliterated version
+                    return romanized || this.basicTransliterate(cleanWord);
+                } catch (error) {
+                    console.warn('Romanization failed for word:', word, error);
+                    return this.basicTransliterate(word);
+                }
+            }
+
+            basicTransliterate(word) {
+                // Basic fallback transliteration for common scripts
+                const transliterationMap = {
+                    // Cyrillic
+                    'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e',
+                    'ё': 'yo', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k',
+                    'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r',
+                    'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'kh', 'ц': 'ts',
+                    'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ъ': '', 'ы': 'y', 'ь': '',
+                    'э': 'e', 'ю': 'yu', 'я': 'ya',
+                    // Arabic/Persian basics
+                    'ا': 'a', 'ب': 'b', 'ت': 't', 'ث': 'th', 'ج': 'j', 'ح': 'h',
+                    'خ': 'kh', 'د': 'd', 'ذ': 'dh', 'ر': 'r', 'ز': 'z', 'س': 's',
+                    'ش': 'sh', 'ص': 's', 'ض': 'd', 'ط': 't', 'ظ': 'z', 'ع': 'a',
+                    'غ': 'gh', 'ف': 'f', 'ق': 'q', 'ک': 'k', 'گ': 'g', 'ل': 'l',
+                    'م': 'm', 'ن': 'n', 'و': 'w', 'ه': 'h', 'ی': 'y', 'پ': 'p',
+                    'چ': 'ch', 'ژ': 'zh'
+                };
+
+                return word.split('').map(char => {
+                    const lower = char.toLowerCase();
+                    return transliterationMap[lower] || char;
+                }).join('');
+            }
+
+            toggleRomanization() {
+                this.isRomanizationVisible = !this.isRomanizationVisible;
+                const $output = $('#outputSection');
+                const $toggleBtn = $('#toggleRomanization i');
+
+                if (this.isRomanizationVisible) {
+                    $output.removeClass('romanization-hidden');
+                    $toggleBtn.removeClass('bi-eye-slash').addClass('bi-eye');
+                } else {
+                    $output.addClass('romanization-hidden');
+                    $toggleBtn.removeClass('bi-eye').addClass('bi-eye-slash');
+                }
+            }
+
+            clearAll() {
+                $('#originalText').val('');
+                $('#translationText').val('');
+                this.updateSmartButton();
+                this.renderOutput();
+            }
+
+            handleScroll() {
+                const scrollTop = $(window).scrollTop();
+                const $fabContainer = $('#fabContainer');
+
+                if (scrollTop > this.lastScrollTop && scrollTop > 100) {
+                    // Scrolling down
+                    $fabContainer.addClass('hidden');
+                } else {
+                    // Scrolling up
+                    $fabContainer.removeClass('hidden');
+                }
+
+                this.lastScrollTop = scrollTop;
+            }
+
+            escapeHtml(text) {
+                return text
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+
+            async registerServiceWorker() {
+                if ('serviceWorker' in navigator) {
+                    try {
+                        await navigator.serviceWorker.register('./sw.js');
+                        console.log('Service Worker registered');
+                    } catch (error) {
+                        console.warn('Service Worker registration failed:', error);
+                    }
+                }
+            }
+        }
+
+        // Initialize the app when DOM is ready
+        $(document).ready(() => {
+            new LanguageLearningPWA();
+        });
+    </script> -->
+</body>
+</html>
